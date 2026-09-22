@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberGuard Threat Scanner</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="extension-container">
+    <!-- Header -->
+    <header class="cyber-header">
+      <div class="logo-group">
+        <span class="shield-icon">🛡️</span>
+        <span class="logo-title">CYBER<span class="cyan">GUARD</span></span>
+      </div>
+      <div id="connection-status" class="status-pill status-online">ENGINE ONLINE</div>
+    </header>
+
+    <!-- Target URL Bar -->
+    <section class="url-card">
+      <span class="card-label">CURRENT TAB</span>
+      <div id="active-url" class="url-display">Loading target URL...</div>
+    </section>
+
+    <!-- Scan Results Body -->
+    <main id="scan-content">
+      <!-- Status Badge & Risk Meter -->
+      <div class="result-banner">
+        <div id="verdict-badge" class="badge badge-scanning">SCANNING...</div>
+        <div class="risk-meter-container">
+          <div class="risk-label">
+            <span>RISK SCORE</span>
+            <span id="risk-score-value">--%</span>
+          </div>
+          <div class="meter-track">
+            <div id="risk-meter-bar" class="meter-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Indicators Matrix -->
+      <div class="matrix-grid">
+        <div class="matrix-item">
+          <span class="matrix-title">Domain Age</span>
+          <span id="val-domain-age" class="matrix-val">--</span>
+        </div>
+        <div class="matrix-item">
+          <span class="matrix-title">SSL Certificate</span>
+          <span id="val-ssl" class="matrix-val">--</span>
+        </div>
+        <div class="matrix-item">
+          <span class="matrix-title">Redirect Count</span>
+          <span id="val-redirects" class="matrix-val">--</span>
+        </div>
+        <div class="matrix-item">
+          <span class="matrix-title">Password Input</span>
+          <span id="val-login" class="matrix-val">--</span>
+        </div>
+      </div>
+
+      <!-- AI Threat Analysis -->
+      <div class="ai-box">
+        <div class="ai-header">
+          <span class="ai-icon">🤖</span> AI THREAT ANALYSIS
+        </div>
+        <p id="ai-explanation-text">Analyzing page telemetry...</p>
+      </div>
+
+      <!-- Threat Type Tags -->
+      <div id="threat-tags" class="tags-container" style="display: none;"></div>
+    </main>
+
+    <!-- Manual Quick Scan -->
+    <section class="quick-scan-section">
+      <div class="input-group">
+        <input type="text" id="manual-url-input" placeholder="Scan custom domain or URL...">
+        <button id="btn-manual-scan">SCAN</button>
+      </div>
+    </section>
+
+    <!-- Footer Controls -->
+    <footer class="cyber-footer">
+      <button id="btn-toggle-block" class="btn-block">🛡️ BLOCK THIS DOMAIN</button>
+      <div class="footer-note">CyberGuard AI Engine v2.0</div>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

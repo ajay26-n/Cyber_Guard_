@@ -4,6 +4,9 @@ import socket
 from bs4 import BeautifulSoup
 from datetime import datetime
 from urllib.parse import urlparse
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 try:
     import whois
@@ -11,19 +14,51 @@ except ImportError:
     whois = None
 
 def is_reachable(url):
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+    
+    # 1. Try HTTPS/HTTP GET request (verify=False to avoid local SSL bundle issues)
     try:
-        headers = {"User-Agent": "Mozilla/5.0"}
-        r = requests.get(url, headers=headers, timeout=5)
+        r = requests.get(url, headers=headers, timeout=5, verify=False)
         return r.status_code < 500
-    except:
-        return False
+    except Exception:
+        pass
+
+    # 2. Try HTTP fallback if HTTPS failed
+    if url.startswith("https://"):
+        try:
+            http_url = "http://" + url[8:]
+            r = requests.get(http_url, headers=headers, timeout=5, verify=False)
+            return r.status_code < 500
+        except Exception:
+            pass
+
+    # 3. Try DNS resolution fallback (for offline, take-down, or DNS-only reachable domains)
+    try:
+        domain = urlparse(url).netloc
+        if domain:
+            domain = domain.split(":")[0]
+            socket.gethostbyname(domain)
+            return True
+    except Exception:
+        pass
+
+    # 4. Scanner resilience fallback: if domain structure is valid, allow feature scanning
+    try:
+        parsed = urlparse(url)
+        domain = parsed.netloc or parsed.path
+        if "." in domain and len(domain.split(".")[-1]) >= 2:
+            return True
+    except Exception:
+        pass
+
+    return False
 
 def check_redirects(url):
     try:
-        headers = {"User-Agent": "Mozilla/5.0"}
-        r = requests.get(url, headers=headers, allow_redirects=True, timeout=5)
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+        r = requests.get(url, headers=headers, allow_redirects=True, timeout=5, verify=False)
         return len(r.history)
-    except:
+    except Exception:
         return 0
 
 def check_domain_age(url):
@@ -71,7 +106,7 @@ def brand_impersonation(url):
 
 def detect_login_form(url):
     try:
-        r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
+        r = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}, timeout=5, verify=False)
         soup = BeautifulSoup(r.text, "html.parser")
         inputs = soup.find_all("input")
         for i in inputs:
