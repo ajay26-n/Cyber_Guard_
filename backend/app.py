@@ -59,8 +59,11 @@ def build_extension_zip():
     return zip_path
 
 def block_domain(url):
-    # Safely bypass on non-Windows/cloud environments
+    # Safely bypass on non-Windows/cloud environments or local hosts
     try:
+        hostname = urlparse(url).hostname
+        if hostname in ["127.0.0.1", "localhost"]:
+            return
         hosts_path = r"C:\Windows\System32\drivers\etc\hosts"
         if not os.path.exists(hosts_path):
             return
@@ -97,6 +100,22 @@ def scan():
 
     if not url.startswith(("http://", "https://")):
         url = "https://" + url
+
+    hostname = urlparse(url).hostname
+    if hostname in ["127.0.0.1", "localhost"]:
+        return jsonify({
+            "url": url,
+            "result": "SAFE",
+            "risk_score": 0,
+            "domain_age": 999,
+            "ssl_valid": True,
+            "redirects": 0,
+            "login_page": False,
+            "threat_types": [],
+            "ai_explanation": "Localhost server.",
+            "location": "Local Machine",
+            "features": {"length": len(url), "keywords": 0, "subdomains": 0, "has_ip": False, "special_chars": 0}
+        })
 
     if not is_reachable(url):
         return jsonify({"error": "Website unreachable"}), 400

@@ -19,7 +19,7 @@ if (browserApi && browserApi.tabs) {
 }
 
 async function inspectTabUrl(tabId, url) {
-  if (!url || url.startsWith("chrome://") || url.startsWith("about:") || url.includes("blocked.html")) {
+  if (!url || url.startsWith("chrome://") || url.startsWith("about:") || url.includes("blocked.html") || url.includes("127.0.0.1") || url.includes("localhost")) {
     updateBadge(tabId, "", "");
     return;
   }
