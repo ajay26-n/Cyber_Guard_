@@ -1,4 +1,5 @@
-const API_URL = "http://127.0.0.1:5000/scan";
+const API_URL = "https://cyber-guard-r4vionjpd-titans-985d.vercel.app/scan";
+
 const browserApi = (typeof chrome !== "undefined" && chrome.tabs) ? chrome : (typeof browser !== "undefined" ? browser : null);
 
 // Monitor tab navigation
@@ -19,7 +20,7 @@ if (browserApi && browserApi.tabs) {
 }
 
 async function inspectTabUrl(tabId, url) {
-  if (!url || url.startsWith("chrome://") || url.startsWith("about:") || url.includes("blocked.html") || url.includes("127.0.0.1") || url.includes("localhost")) {
+  if (!url || url.startsWith("chrome://") || url.startsWith("about:") || url.includes("blocked.html") || url.includes("127.0.0.1") || url.includes("localhost") || url.includes("vercel.app")) {
     updateBadge(tabId, "", "");
     return;
   }
@@ -74,8 +75,8 @@ function updateBadge(tabId, text, color) {
 }
 
 function blockTab(tabId, targetUrl, riskScore, reason) {
-  const blockPageUrl = browserApi.runtime.getURL("blocked.html") + 
+  const blockPageUrl = browserApi.runtime.getURL("blocked.html") +
     `?target=${encodeURIComponent(targetUrl)}&risk=${riskScore || 85}&reason=${encodeURIComponent(reason || "High risk phishing pattern detected.")}`;
-  
+
   browserApi.tabs.update(tabId, { url: blockPageUrl });
 }

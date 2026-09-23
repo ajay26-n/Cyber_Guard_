@@ -101,8 +101,8 @@ def scan():
     if not url.startswith(("http://", "https://")):
         url = "https://" + url
 
-    hostname = urlparse(url).hostname
-    if hostname in ["127.0.0.1", "localhost"]:
+    hostname = urlparse(url).hostname or ""
+    if hostname in ["127.0.0.1", "localhost"] or hostname.endswith("vercel.app"):
         return jsonify({
             "url": url,
             "result": "SAFE",
@@ -112,7 +112,7 @@ def scan():
             "redirects": 0,
             "login_page": False,
             "threat_types": [],
-            "ai_explanation": "Localhost server.",
+            "ai_explanation": "CyberGuard web application server.",
             "location": "Local Machine",
             "features": {"length": len(url), "keywords": 0, "subdomains": 0, "has_ip": False, "special_chars": 0}
         })
