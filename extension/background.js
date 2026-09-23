@@ -1,4 +1,4 @@
-const API_URL = "https://cyber-guard-r4vionjpd-titans-985d.vercel.app/scan";
+const API_URL = "https://cyber-guard-rouge.vercel.app/scan";
 
 const browserApi = (typeof chrome !== "undefined" && chrome.tabs) ? chrome : (typeof browser !== "undefined" ? browser : null);
 

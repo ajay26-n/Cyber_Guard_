@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:5000/scan";
+const API_URL = "https://cyber-guard-rouge.vercel.app/scan";
 
 document.addEventListener("DOMContentLoaded", async () => {
   const activeUrlElem = document.getElementById("active-url");
@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       connStatus.className = "status-pill status-offline";
       verdictBadge.textContent = "UNREACHABLE";
       verdictBadge.className = "badge badge-scanning";
-      aiExplanationText.textContent = "Could not connect to CyberGuard backend at http://127.0.0.1:5000. Ensure Flask app.py is running.";
+      aiExplanationText.textContent = `Could not connect to CyberGuard backend at ${API_URL}. Ensure the server is online.`;
     }
   }
 
