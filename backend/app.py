@@ -1,5 +1,6 @@
 import os
 import sys
+import io
 import zipfile
 from urllib.parse import urlparse
 from flask import Flask, request, jsonify, render_template, send_file
@@ -44,19 +45,17 @@ except Exception as e:
 
 def build_extension_zip():
     ext_dir = os.path.abspath(os.path.join(BASE_DIR, "../extension"))
-    zip_path = os.path.join(STATIC_DIR, "cyberguard-extension.zip")
+    memory_file = io.BytesIO()
     
-    if not os.path.exists(STATIC_DIR):
-        os.makedirs(STATIC_DIR, exist_ok=True)
-
-    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+    with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, dirs, files in os.walk(ext_dir):
             for file in files:
                 full_path = os.path.join(root, file)
                 rel_path = os.path.relpath(full_path, ext_dir)
                 if not rel_path.startswith("chrome") and not rel_path.startswith("firefox"):
                     zipf.write(full_path, rel_path)
-    return zip_path
+    memory_file.seek(0)
+    return memory_file
 
 def block_domain(url):
     # Safely bypass on non-Windows/cloud environments or local hosts
@@ -84,11 +83,15 @@ def home():
 @app.route("/download-extension")
 def download_extension():
     try:
-        zip_path = build_extension_zip()
-        return send_file(zip_path, as_attachment=True, download_name="cyberguard-extension.zip")
+        mem_zip = build_extension_zip()
+        return send_file(
+            mem_zip,
+            mimetype="application/zip",
+            as_attachment=True,
+            download_name="cyberguard-extension.zip"
+        )
     except Exception as e:
         return jsonify({"error": f"Could not create extension package: {str(e)}"}), 500
-    return render_template("index.html")
 
 @app.route("/scan", methods=["POST"])
 def scan():
